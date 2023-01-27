@@ -10,10 +10,18 @@ const bare = createBareServer("/bare/");
 const app = express();
 
 // Load our publicPath first and prioritize it over UV.
-app.use(express.static(publicPath));
+app.use(express.static(publicPath, {
+  setHeaders: (res) => {
+    res.setHeader('Service-Worker-Allowed', '/');
+  },
+}));
 // Load vendor files last.
 // The vendor's uv.config.js won't conflict with our uv.config.js inside the publicPath directory.
-app.use("/uv/", express.static(uvPath));
+app.use("/uv/",express.static(uvPath, {
+  setHeaders: (res) => {
+    res.setHeader('Service-Worker-Allowed', '/');
+  },
+}));
 
 // Error for everything else
 app.use((req, res) => {
